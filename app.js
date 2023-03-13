@@ -1,5 +1,9 @@
 const express = require('express');
+const mongoose = require("mongoose");
 const bodyParser =require('body-parser');
+
+const user = require('./Models/UserModel')
+
 const app = express();
 
 // parse application/x-www-form-urlencoded
@@ -59,15 +63,27 @@ app.get('/doctor',(req,res)=>{
 
 // Add new patient
 
-app.post('/add-patient', (req,res) =>{
+app.post('/add-user', async (req,res) =>{
 
-    let name = req.body.name;
-    let email = req.body.email;
-    let password = req.body.password;
-    let guardian = req.body.guardian;
-    res.json({name, email,password, guardian})
+    const {name  , email , password} = req.body;
 
-})
+    const User = await new user({
+        name,
+        email,
+        password
+    });
+
+    await User.save();
+
+    res.json({
+        status: 200,
+        message: "User Added Successfully",
+        data: User
+    })
+
+});
+
+
 app.post('/add-doctor',(req,res)=>{
     let name =req.body.name;
     let salary =req.body.salary;
@@ -76,6 +92,17 @@ app.post('/add-doctor',(req,res)=>{
     let password = req.body.password;
     res.json({name,salary,patient,email,password})
 })
+
+
+
+
+// Connect to db
+
+mongoose.connect('mongodb://127.0.0.1:27017/myFirstDb').then(() => {
+    console.log('Connected to db');
+}).catch((err) => {
+    console.log(err.message);
+});
 
 
 app.listen('3000', () => {
