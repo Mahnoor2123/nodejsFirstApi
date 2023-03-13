@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require("mongoose");
 const bodyParser =require('body-parser');
 
-const user = require('./Models/UserModel')
+const user = require('./Models/UserModel');
+const patient = require("./Models/patient")
 
 const app = express();
 
@@ -62,6 +63,21 @@ app.get('/doctor',(req,res)=>{
 });
 
 // Add new patient
+app.post('/add-patient', async(req,res)=>{
+    const {name, doctor ,disease}= req.body;
+    const Patient =await new patient({
+        name,
+        doctor,
+        disease,
+    });
+    await Patient.save();
+
+    res.json({
+        status: 200,
+        message: "User Added Successfully",
+        data: patient
+    })
+})
 
 app.post('/add-user', async (req,res) =>{
 
